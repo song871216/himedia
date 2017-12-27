@@ -1,7 +1,8 @@
-package com.himedia.usrserv.dao;
+package com.himedia.usrserv.basedao;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 public interface BaseDao<T> {
 	 /**  
@@ -93,5 +94,6 @@ public interface BaseDao<T> {
      * @return 实体对象  
      */  
     T get(Class<T> entityClass, Serializable id);  
-    
+ 
+    List<T> findByEntity(T instance);
 }

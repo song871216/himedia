@@ -1,7 +1,8 @@
-package com.himedia.usrserv.dao;
+package com.himedia.usrserv.basedao;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -63,5 +64,9 @@ public abstract class AbstractDao<T> extends HibernateDaoSupport implements Base
 	public T get(Class<T> entityClass, Serializable id) {
 		return getHibernateTemplate().load(entityClass, id);
 	}
-
+	
+	@Override
+	public List<T> findByEntity(T instance) {
+		return getHibernateTemplate().findByExample(instance);
+	}
 }

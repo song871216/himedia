@@ -1,4 +1,4 @@
-package com.himedia.usrserv.model;
+package com.himedia.usrserv.customer.model;
 
 
 import java.util.Date;
@@ -21,9 +21,6 @@ public class Customer {
 	@Column(name="customer_id", nullable=false, unique=true)
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long customerId;
-	
-	@Column(name="role_id", nullable=false)
-	Long roleId;
 	
 	@Column(name="login_name", length=64, nullable=false,unique=true)
 	String loginName;
@@ -51,20 +48,26 @@ public class Customer {
 	@Temporal(TemporalType.TIMESTAMP)
 	Date updateDate;
 
+	@Column(name="last_login")
+	@Temporal(TemporalType.TIMESTAMP)
+	Date lastLogin;
+	
+	@Column(name="role_type", nullable=false)
+	Integer roleType;
+	
+	@Column(name="sex", nullable=false)
+	Integer sex;
+	
+	@Column(name="birthday")
+	@Temporal(TemporalType.TIMESTAMP)
+	Date birthday;
+	
 	public Long getCustomerId() {
 		return customerId;
 	}
 
 	public void setCustomerId(Long customerId) {
 		this.customerId = customerId;
-	}
-
-	public Long getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
 	}
 
 	public String getLoginName() {
@@ -131,6 +134,43 @@ public class Customer {
 		this.updateDate = updateDate;
 	}
 
-	
-	
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	public Integer getRoleType() {
+		return roleType;
+	}
+
+	public void setRoleType(Integer roleType) {
+		this.roleType = roleType;
+	}
+
+	public Integer getSex() {
+		return sex;
+	}
+
+	public void setSex(Integer sex) {
+		this.sex = sex;
+	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId + ", loginName=" + loginName + ", loginPsw=" + loginPsw
+				+ ", identify=" + identify + ", nickName=" + nickName + ", realName=" + realName + ", mobilePhone="
+				+ mobilePhone + ", createDate=" + createDate + ", updateDate=" + updateDate + ", lastLogin=" + lastLogin
+				+ ", roleType=" + roleType + ", sex=" + sex + ", birthday=" + birthday + "]";
+	}
 }

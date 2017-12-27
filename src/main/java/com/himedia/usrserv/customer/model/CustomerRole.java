@@ -1,4 +1,4 @@
-package com.himedia.usrserv.model;
+package com.himedia.usrserv.customer.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
