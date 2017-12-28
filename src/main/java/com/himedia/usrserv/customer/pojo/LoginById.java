@@ -3,26 +3,32 @@ package com.himedia.usrserv.customer.pojo;
 import java.util.Date;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 public class LoginById {
 	
 	@NotEmpty
+	@NotNull
 	@Length(min=18, max=18)
 	String identify;
 	
 	@NotEmpty
+	@NotNull
 	@Length(min=1, max=255)
 	String loginPsw;
 	
 	@NotEmpty
+	@NotNull
 	String realName;
 	
-	@NotEmpty
+	@Range(min=0, max=1)
 	int sex;
 	
-	@NotEmpty
+	@NotNull
 	Date birthday;
 
 	public String getIdentify() {
@@ -60,6 +66,10 @@ public class LoginById {
 
 	public void setSex(int sex) {
 		this.sex = sex;
+	}
+	
+	public Date getBirthday() {
+		return birthday;
 	}
 
 	@Override
