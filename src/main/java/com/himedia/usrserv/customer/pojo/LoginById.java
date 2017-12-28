@@ -2,26 +2,23 @@ package com.himedia.usrserv.customer.pojo;
 
 import java.util.Date;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
 
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class LoginById {
 	
-	@NotEmpty
 	@NotNull
 	@Length(min=18, max=18)
 	String identify;
 	
-	@NotEmpty
 	@NotNull
 	@Length(min=1, max=255)
 	String loginPsw;
 	
-	@NotEmpty
 	@NotNull
 	String realName;
 	
@@ -29,6 +26,7 @@ public class LoginById {
 	int sex;
 	
 	@NotNull
+	@JsonFormat(pattern="yyyyMMddHHmmss")
 	Date birthday;
 
 	public String getIdentify() {

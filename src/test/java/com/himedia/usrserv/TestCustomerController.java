@@ -1,6 +1,7 @@
 package com.himedia.usrserv;
 
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.codec.digest.Md5Crypt;
@@ -12,6 +13,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import com.himedia.usrserv.customer.pojo.LoginById;
 
 public class TestCustomerController extends AbstractTestRunner {
@@ -27,9 +30,10 @@ public class TestCustomerController extends AbstractTestRunner {
 		loginById.setRealName("灰帽子");
 		loginById.setSex(1);
 		
-		String content = new Gson().toJson(loginById);
+		JsonElement content = new Gson().toJsonTree(loginById);
+		content.getAsJsonObject().add("birthday", new JsonPrimitive(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
 		
-		String respStr = mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON_UTF8).content(content))
+		String respStr = mockMvc.perform(MockMvcRequestBuilders.post(uri).contentType(MediaType.APPLICATION_JSON_UTF8).content(content.toString()))
 		.andExpect(MockMvcResultMatchers.status().isOk())
 		.andReturn()
 		.getResponse().getContentAsString();

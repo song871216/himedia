@@ -6,7 +6,9 @@ import org.hibernate.jpa.HibernateEntityManagerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -14,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@EnableTransactionManagement
+@ComponentScan("com.himedia.usrserv")
 @ImportResource({"classpath:applicationContext.xml"})
 public class UserServiceApplication {
 
