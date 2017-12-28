@@ -1,11 +1,13 @@
 package com.himedia.usrserv.customer.controller;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.himedia.usrserv.common.HiMediaException;
@@ -28,4 +30,13 @@ public class CustomerController {
 		return customerService.processLoginByIdentify(loginById);
 	}
 	
+	/**
+	 * 验证身份证是否合法
+	 * @param identify
+	 * @return
+	 */
+	@RequestMapping(value="verify_identify", method = RequestMethod.GET)
+	public Object verifyIdentify( @RequestParam("identify") @NotNull String identify ) {
+		return customerService.verifyIdentify(identify);
+	}
 }

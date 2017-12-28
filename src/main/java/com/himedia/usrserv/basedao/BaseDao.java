@@ -96,4 +96,5 @@ public interface BaseDao<T> {
     T get(Class<T> entityClass, Serializable id);  
  
     List<T> findByEntity(T instance);
+    
 }

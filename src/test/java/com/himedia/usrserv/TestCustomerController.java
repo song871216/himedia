@@ -7,7 +7,6 @@ import java.util.Date;
 import org.apache.commons.codec.digest.Md5Crypt;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -39,6 +38,19 @@ public class TestCustomerController extends AbstractTestRunner {
 		.getResponse().getContentAsString();
 		
 		Assert.assertNotNull(respStr);
+	}
+	
+	@Test
+	public void testverifyIdentify() throws UnsupportedEncodingException, Exception {
+		String uri = "/customer/verify_identify?identify=370284198702105316";
+		
+		String respStr = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andReturn().getResponse().getContentAsString();
+		
+		JsonElement resp = new Gson().fromJson(respStr, JsonElement.class);
+		
+		Assert.assertEquals(0, resp.getAsJsonObject().get("resultCode").getAsInt());
 	}
 
 }

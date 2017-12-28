@@ -18,6 +18,7 @@
 		<property name="packagesToScan">
 			<list>
 				<value>com.himedia.usrserv.customer.model</value>
+				<value>com.himedia.usrserv.thirdparty.domain</value>
 			</list>
 		</property>  
 		<property name="hibernateProperties">

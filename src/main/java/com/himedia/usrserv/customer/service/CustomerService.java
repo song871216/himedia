@@ -2,8 +2,10 @@ package com.himedia.usrserv.customer.service;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.himedia.usrserv.common.CommonResp;
 import com.himedia.usrserv.common.ErrorCode;
 import com.himedia.usrserv.common.HiMediaException;
 import com.himedia.usrserv.customer.dao.CustomerDao;
@@ -25,9 +28,17 @@ public class CustomerService {
 	
 	static final Logger logger = LoggerFactory.getLogger(CustomerService.class);
 	
+	static final Pattern ID_PATTERN = Pattern.compile("^([0-9]{17}[0-9Xx])|([0-9]{15})$");
+	
 	@Autowired
 	CustomerDao customerDao;
 	
+	/**
+	 * user login by identify, if user not exist in system then perform register process
+	 * @param loginById
+	 * @return
+	 * @throws HiMediaException
+	 */
 	@Transactional
 	public LoginResult processLoginByIdentify(LoginById loginById) throws HiMediaException {
 		
@@ -48,6 +59,19 @@ public class CustomerService {
 				logger.error("user has changed default password, cannot login by id.");
 				throw new HiMediaException(ErrorCode.ID_LOGIN_ERROR);
 			}
+		}
+	}
+	
+	/**
+	 * verify identify is valid
+	 * @param identify
+	 * @return
+	 */
+	public Object verifyIdentify(@NotNull String identify) {
+		if( ID_PATTERN.matcher(identify).matches() ) {
+			return CommonResp.succeed(); 
+		}else {
+			return CommonResp.failed(ErrorCode.ID_INVALID.desc());
 		}
 	}
 

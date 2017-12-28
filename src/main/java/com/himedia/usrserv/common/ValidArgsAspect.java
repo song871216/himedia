@@ -14,9 +14,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.core.ParameterNameDiscoverer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.ObjectError;
@@ -24,8 +23,8 @@ import org.springframework.validation.ObjectError;
 @Aspect
 @Component
 public class ValidArgsAspect {
-	private ObjectError error;
-
+	static final Logger logger = LoggerFactory.getLogger(ValidArgsAspect.class);
+	
 	@Pointcut("execution(public * com.example.controller.*.*(..))")
 	public void valid() {
 	}
@@ -49,10 +48,10 @@ public class ValidArgsAspect {
 					if (result.hasErrors()) {
 						List<ObjectError> list = result.getAllErrors();
 						for (ObjectError error : list) {
-							System.out.println(
+							logger.info(
 									error.getCode() + "---" + error.getArguments() + "--" + error.getDefaultMessage());
 							// 返回第一条校验失败信息。也可以拼接起来返回所有的
-							return error.getDefaultMessage();
+							return CommonResp.failed(error.getDefaultMessage());
 						}
 					}
 				}
@@ -67,19 +66,8 @@ public class ValidArgsAspect {
 			Set<ConstraintViolation<Object>> validResult = validMethodParams(target, method, objects);
 			// 如果有校验不通过的
 			if (!validResult.isEmpty()) {
-				String[] parameterNames = parameterNameDiscoverer.getParameterNames(method); // 获得方法的参数名称
-
-				for (ConstraintViolation<Object> constraintViolation : validResult) {
-					PathImpl pathImpl = (PathImpl) constraintViolation.getPropertyPath(); // 获得校验的参数路径信息
-					int paramIndex = pathImpl.getLeafNode().getParameterIndex(); // 获得校验的参数位置
-					String paramName = parameterNames[paramIndex]; // 获得校验的参数名称
-
-					System.out.println(paramName);
-					// 校验信息
-					System.out.println(constraintViolation.getMessage());
-				}
 				// 返回第一条
-				return validResult.iterator().next().getMessage();
+				return CommonResp.failed(validResult.iterator().next().getMessage());
 			}
 
 			return pjp.proceed();
@@ -89,7 +77,6 @@ public class ValidArgsAspect {
 		}
 	}
 
-	private ParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
 	private final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 	private final ExecutableValidator validator = factory.getValidator().forExecutables();
 

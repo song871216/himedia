@@ -19,7 +19,7 @@ public class Customer {
 	
 	@Id
 	@Column(name="customer_id", nullable=false, unique=true)
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long customerId;
 	
 	@Column(name="login_name", length=64, nullable=false,unique=true)

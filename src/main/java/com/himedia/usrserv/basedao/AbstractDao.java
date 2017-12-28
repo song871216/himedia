@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
@@ -68,5 +69,9 @@ public abstract class AbstractDao<T> extends HibernateDaoSupport implements Base
 	@Override
 	public List<T> findByEntity(T instance) {
 		return getHibernateTemplate().findByExample(instance);
+	}
+	
+	protected Session getSession() {
+		return getHibernateTemplate().getSessionFactory().getCurrentSession();
 	}
 }
