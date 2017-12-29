@@ -3,13 +3,13 @@ package com.himedia.usrserv.thirdparty;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,8 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.himedia.usrserv.basedao.Pager;
 import com.himedia.usrserv.thirdparty.dao.WeatherDao;
-import com.himedia.usrserv.thirdparty.domain.WeatherCityCode;
 
 @Service
 public class WeatherService {
@@ -50,12 +50,19 @@ public class WeatherService {
 	 * @param cityName
 	 * @return
 	 */
-	public List<WeatherCityCode> findCitiesByName(String cityName) {
+	public Pager findCitiesByName(String cityName, int pageNo, int pageSize) {
 		logger.info("query cities by city name: {}", cityName);
-		List<WeatherCityCode> weatherCityCodes = weatherDao.matchByCityName(cityName);
-		return weatherCityCodes;
+		
+		if( pageNo < 0 ) {
+			pageNo = 0;
+		}
+		
+		if( pageSize < 0 ) {
+			pageSize = 10;
+		}
+		
+		return weatherDao.matchByCityName(cityName, pageNo, pageSize);
 	}
-	
 	
 	/** 
 	 * getCurrentWeather:get current city weather. <br/> 
@@ -66,6 +73,7 @@ public class WeatherService {
 	 * @return
 	 * @throws MalformedURLException 
 	 */  
+	@Cacheable(value="weatherCache", key="'current_weather_'+#cityName")
 	public Map<?, ?> getCurrentWeather(String cityName) throws MalformedURLException {
 		JsonObject respObj = processGetReq(cityName, getCurrentWeatherUrl);
 		
@@ -91,6 +99,7 @@ public class WeatherService {
 	 * @return
 	 * @throws MalformedURLException 
 	 */  
+	@Cacheable(value="weatherCache", key="'current_recommend'+#cityName")
 	public Map<?, ?> getWeatherRecommend(String cityName) throws MalformedURLException {
 		JsonObject respObj =  processGetReq(cityName, getActivityWeatherUrl);
 		

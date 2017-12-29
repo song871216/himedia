@@ -15,6 +15,7 @@ import javax.validation.constraints.NotEmpty;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +40,7 @@ public class ThirdpartyController {
 	@Autowired
 	WeatherService weatherService;
 
-	@RequestMapping(value="current")
+	@RequestMapping(value="current", method = RequestMethod.GET)
 	public Object getWeatherInfo(@RequestParam("cityName") @NotEmpty String cityName) throws HiMediaException {
 		try {
 			Map<?, ?> data = weatherService.getCurrentWeather(cityName);
@@ -54,7 +55,7 @@ public class ThirdpartyController {
 		}
 	}
 	
-	@RequestMapping(value="recommend")
+	@RequestMapping(value="recommend", method = RequestMethod.GET)
 	public Object getWeatherRecommendInfo(@RequestParam("cityName") @NotEmpty String cityName) throws HiMediaException {
 		try {
 			Map<?, ?> data = weatherService.getWeatherRecommend(cityName);
@@ -63,6 +64,17 @@ public class ThirdpartyController {
 			}
 			
 			return CommonResp.succeed(data);
+		}
+		catch (Exception e) {
+			throw new HiMediaException(ErrorCode.SYS_ERROR.code(), ErrorCode.SYS_ERROR.desc(e.getMessage()));
+		}
+	}
+	
+	@RequestMapping(value="city", method = RequestMethod.GET)
+	public Object queryCityInfo(@RequestParam(name = "cityName", required=true) @NotEmpty String cityName, 
+			@RequestParam(name = "pageNo", required=true) int pageNo, @RequestParam(name = "pageSize", required=true) int pageSize) throws HiMediaException {
+		try {
+			return CommonResp.succeed(weatherService.findCitiesByName(cityName, pageNo, pageSize));
 		}
 		catch (Exception e) {
 			throw new HiMediaException(ErrorCode.SYS_ERROR.code(), ErrorCode.SYS_ERROR.desc(e.getMessage()));

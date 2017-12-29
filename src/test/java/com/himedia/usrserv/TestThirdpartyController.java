@@ -33,7 +33,24 @@ public class TestThirdpartyController extends AbstractTestRunner {
 
 	@Test
 	public void testGetCurrentWeather() throws UnsupportedEncodingException, Exception {
-		String uri = "/third/weather/current";
+		for(int i=0;i<2;i++) {
+			String uri = "/third/weather/current";
+			
+			String cityCode = "青岛";
+			
+			String respStr = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON_UTF8).param("cityName", cityCode))
+					.andExpect(MockMvcResultMatchers.status().isOk())
+					.andReturn().getResponse().getContentAsString();
+			
+			JsonElement resp = new Gson().fromJson(respStr, JsonElement.class);
+			
+			Assert.assertEquals(0, resp.getAsJsonObject().get("resultCode").getAsInt());
+		}
+	}
+	
+	@Test
+	public void testGetWeatherRecommend() throws UnsupportedEncodingException, Exception {
+		String uri = "/third/weather/recommend";
 		
 		String cityCode = "青岛";
 		
@@ -47,12 +64,17 @@ public class TestThirdpartyController extends AbstractTestRunner {
 	}
 	
 	@Test
-	public void testGetWeatherRecommend() throws UnsupportedEncodingException, Exception {
-		String uri = "/third/weather/recommend";
+	public void testQueryCity() throws UnsupportedEncodingException, Exception {
+		String uri = "/third/weather/city";
 		
-		String cityCode = "青岛";
+		String cityName = "青";
+		int pageNo = 1;
+		int pageSize = 10;
 		
-		String respStr = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON_UTF8).param("cityName", cityCode))
+		String respStr = mockMvc.perform(MockMvcRequestBuilders.get(uri).contentType(MediaType.APPLICATION_JSON_UTF8)
+				.param("cityName", cityName)
+				.param("pageNo", pageNo+"")
+				.param("pageSize", pageSize+""))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andReturn().getResponse().getContentAsString();
 		

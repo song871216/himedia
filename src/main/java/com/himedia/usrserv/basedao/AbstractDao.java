@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
+@Transactional
 public abstract class AbstractDao<T> extends HibernateDaoSupport implements BaseDao<T> {
 
 	@Autowired
@@ -72,6 +74,6 @@ public abstract class AbstractDao<T> extends HibernateDaoSupport implements Base
 	}
 	
 	protected Session getSession() {
-		return getHibernateTemplate().getSessionFactory().getCurrentSession();
+		return sessionFactory.getCurrentSession();
 	}
 }
