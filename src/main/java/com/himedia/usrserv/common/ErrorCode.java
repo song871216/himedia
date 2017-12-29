@@ -8,7 +8,9 @@ public enum ErrorCode {
 	
 	ID_INVALID(1001, "身份证号码不合法"),
 	
-	SYS_ERROR(4000, "系统错误：%s");
+	SYS_ERROR(4000, "系统错误：%s"),
+	
+	GET_BAIDU_ACCESS_TOKEN_FAILED(5000, "获取token失败：%s");
 	
 	int code;
 	
