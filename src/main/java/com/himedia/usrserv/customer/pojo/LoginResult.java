@@ -2,9 +2,7 @@ package com.himedia.usrserv.customer.pojo;
 
 import java.util.Date;
 
-import com.himedia.usrserv.common.CommonResp;
-
-public class LoginResult extends CommonResp {
+public class LoginResult {
 	
 	public LoginResult() {
 		super();
@@ -23,7 +21,6 @@ public class LoginResult extends CommonResp {
 		this.customerType = customerType;
 		this.customerTypeDesc = customerTypeDesc;
 	}
-
 
 
 	String nickName;

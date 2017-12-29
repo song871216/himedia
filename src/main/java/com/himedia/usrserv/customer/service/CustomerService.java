@@ -40,7 +40,7 @@ public class CustomerService {
 	 * @throws HiMediaException
 	 */
 	@Transactional
-	public LoginResult processLoginByIdentify(LoginById loginById) throws HiMediaException {
+	public CommonResp processLoginByIdentify(LoginById loginById) throws HiMediaException {
 		
 		Customer customer = customerDao.findCustomerByIdentify(loginById.getIdentify());
 		if( customer == null ) {
@@ -54,7 +54,9 @@ public class CustomerService {
 				customerDao.updateLastLogin(customer.getCustomerId());
 				
 				CustomerType customerType = CustomerType.parseof( customer.getRoleType() );
-				return new LoginResult(customer.getNickName(), lastLogin, customerType.type(), customerType.desc() );
+				return CommonResp.succeed(new LoginResult(customer.getNickName(), lastLogin, customerType.type(), customerType.desc() ));
+				
+				
 			}else {
 				logger.error("user has changed default password, cannot login by id.");
 				throw new HiMediaException(ErrorCode.ID_LOGIN_ERROR);
@@ -75,7 +77,7 @@ public class CustomerService {
 		}
 	}
 
-	private LoginResult regAndLogin(LoginById loginById) {
+	private CommonResp regAndLogin(LoginById loginById) {
 		logger.info("start to reg new user: {}", loginById);
 		Customer customer = new Customer();
 		BeanUtils.copyProperties(loginById, customer);
@@ -92,7 +94,7 @@ public class CustomerService {
 		logger.info("start to save customer: {}", customer);
 		Serializable id = customerDao.save(customer);
 		logger.info("user reg success, id: {}", id);
-		return new LoginResult(customer.getNickName(), customer.getLastLogin(), CustomerType.USER.type(), CustomerType.USER.desc() );
+		return CommonResp.succeed(new LoginResult(customer.getNickName(), customer.getLastLogin(), CustomerType.USER.type(), CustomerType.USER.desc() ));
 	}
 
 }

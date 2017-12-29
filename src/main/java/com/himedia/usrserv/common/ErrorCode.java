@@ -6,7 +6,9 @@ public enum ErrorCode {
 	
 	ID_LOGIN_ERROR(1000, "登陆失败，默认密码已经被修改。"),
 	
-	ID_INVALID(1001, "身份证号码不合法");
+	ID_INVALID(1001, "身份证号码不合法"),
+	
+	SYS_ERROR(4000, "系统错误：%s");
 	
 	int code;
 	
