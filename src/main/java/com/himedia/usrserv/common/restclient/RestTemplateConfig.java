@@ -9,27 +9,45 @@
 package com.himedia.usrserv.common.restclient;
 
 import java.nio.charset.Charset;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+
 import org.apache.http.Header;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 /** 
@@ -71,13 +89,15 @@ public class RestTemplateConfig {
 		
 		restTemplate.setMessageConverters(Arrays.asList(
 				formHttpMessageConverter,
-				new StringHttpMessageConverter(Charset.forName("UTF-8"))
+				new StringHttpMessageConverter(Charset.forName("UTF-8")),
+				new GsonHttpMessageConverter(),
+				new ByteArrayHttpMessageConverter()
 				));
 		return  restTemplate;
 	}
 	
 	@Bean
-	public ClientHttpRequestFactory requestConfig(){
+	public ClientHttpRequestFactory requestConfig() throws KeyManagementException, NoSuchAlgorithmException, KeyStoreException{
 		RequestConfig  config = RequestConfig
 									.custom()
 									.setConnectTimeout(connectTimeout * 1000)
@@ -96,7 +116,14 @@ public class RestTemplateConfig {
         headers.add(new BasicHeader("Accept-Encoding", "gzip,deflate"));
         headers.add(new BasicHeader("Accept-Language", "zh-CN"));
         headers.add(new BasicHeader("Connection", "Keep-Alive"));
-		
+        
+        SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+		    public boolean isTrusted(X509Certificate[] arg0, String arg1) throws CertificateException {
+		        return true;
+		    }
+
+		}).build();
+        
 		HttpClientBuilder builder = HttpClientBuilder.create()
 				.setDefaultRequestConfig(config)
 				.setConnectionManager(pollingConnectionManager)
@@ -104,7 +131,21 @@ public class RestTemplateConfig {
 				.setKeepAliveStrategy(new DefaultConnectionKeepAliveStrategy())
 				.setMaxConnPerRoute(this.maxPerRoute)
 				.setMaxConnTotal(this.maxTotal)
-				.setDefaultHeaders(headers);
+				.setDefaultHeaders(headers)
+				.setSSLContext(sslContext);
+
+        HostnameVerifier hostnameVerifier = NoopHostnameVerifier.INSTANCE;
+        
+        SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
+        Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+                .register("http", PlainConnectionSocketFactory.getSocketFactory())
+                .register("https", sslSocketFactory)
+                .build();
+        PoolingHttpClientConnectionManager connMgr = new PoolingHttpClientConnectionManager( socketFactoryRegistry);
+        connMgr.setMaxTotal(200);
+        connMgr.setDefaultMaxPerRoute(100);
+        builder.setConnectionManager( connMgr);
+        
         HttpClient httpClient = builder.build();
         //使用httpClient创建一个ClientHttpRequestFactory的实现
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);

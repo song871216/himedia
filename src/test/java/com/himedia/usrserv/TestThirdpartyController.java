@@ -9,16 +9,19 @@
   
 package com.himedia.usrserv;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.himedia.usrserv.thirdparty.AudioService;
 
 /** 
  * ClassName:TestThirdpartyController <br/> 
@@ -30,6 +33,20 @@ import com.google.gson.JsonElement;
  * @see       
  */
 public class TestThirdpartyController extends AbstractTestRunner {
+	
+	@Autowired
+	AudioService audioService;
+	
+	@Test
+	public void testText2audio() {
+		String text = "合成文本长度必须小于512个中文字或者英文数字。如果本文长度较长，请自行按照标点切割，可以采用多次请求的方式。";
+		File dstFile = new File("E:\\Work\\text2audiotest.mp3");
+		//发音人选择, 0为普通女声，1为普通男生，3为情感合成-度逍遥，4为情感合成-度丫丫，默认为普通女声
+		File save2file = audioService.convertText2audioMp3(text, dstFile, 1);
+		
+		Assert.assertTrue(save2file.exists());
+		Assert.assertTrue(save2file.isFile());
+	}
 
 	@Test
 	public void testGetCurrentWeather() throws UnsupportedEncodingException, Exception {

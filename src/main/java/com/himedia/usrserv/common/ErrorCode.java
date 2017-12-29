@@ -10,7 +10,9 @@ public enum ErrorCode {
 	
 	SYS_ERROR(4000, "系统错误：%s"),
 	
-	GET_BAIDU_ACCESS_TOKEN_FAILED(5000, "获取token失败：%s");
+	GET_BAIDU_ACCESS_TOKEN_FAILED(5000, "获取token失败：%s"), 
+	
+	TEXT_LEN_OUT_OF_RANGE(6000, "文本长度不能大于1024");
 	
 	int code;
 	
