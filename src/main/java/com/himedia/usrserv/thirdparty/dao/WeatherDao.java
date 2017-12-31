@@ -2,7 +2,6 @@ package com.himedia.usrserv.thirdparty.dao;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.MatchMode;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
@@ -18,20 +17,7 @@ public class WeatherDao extends AbstractDao<WeatherCityCode> {
 		
 		criteria.add(Restrictions.like("cityName", cityName, MatchMode.ANYWHERE));
 		
-		Object countObj = criteria.setProjection(Projections.rowCount()).uniqueResult();
-		
-		if( countObj == null ) {
-			return Pager.emptyPager();
-		}
-		
-		long rowCount = ((Number) countObj).longValue();
-		
-		criteria.setProjection(null);
-		criteria.setFirstResult( ( pageNo - 1 ) * pageSize )
-		.setMaxResults(pageSize);
-		
-		
-		return new Pager(pageSize, pageNo, rowCount, criteria.list());
+		return toPager(criteria, pageNo, pageSize);
 	}
 
 	public String getCityNameByCityCode(String cityCode) {

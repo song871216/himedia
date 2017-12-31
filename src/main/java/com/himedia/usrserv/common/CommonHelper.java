@@ -42,6 +42,10 @@ public class CommonHelper {
 	}
 
 	public static boolean isNullOrEmpty(byte[] data) {
-		return data == null && data.length == 0;
+		return data == null || data.length == 0;
+	}
+	
+	public static boolean isNullOrEmpty(Object[] data) {
+		return data == null || data.length == 0;
 	}
 }

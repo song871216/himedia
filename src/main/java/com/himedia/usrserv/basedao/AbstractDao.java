@@ -1,14 +1,17 @@
 package com.himedia.usrserv.basedao;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Projections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
@@ -73,7 +76,37 @@ public abstract class AbstractDao<T> extends HibernateDaoSupport implements Base
 		return getHibernateTemplate().findByExample(instance);
 	}
 	
+	@Override
+	public T findById(Serializable id) {
+		return getHibernateTemplate().load(getActuallType(), id);
+	}
+	
 	protected Session getSession() {
 		return sessionFactory.getCurrentSession();
+	}
+	
+	protected Pager toPager(Criteria criteria, int pageNo, int pageSize) {
+		Object countObj = criteria.setProjection(Projections.rowCount()).uniqueResult();
+		
+		if( countObj == null ) {
+			return Pager.emptyPager();
+		}
+		
+		long rowCount = ((Number) countObj).longValue();
+		
+		criteria.setProjection(null);
+		criteria.setFirstResult( ( pageNo - 1 ) * pageSize )
+		.setMaxResults(pageSize);
+		
+		return new Pager(pageSize, pageNo, rowCount, criteria.list());
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected Class<T> getActuallType(){
+		return (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+	}
+	
+	protected Criteria createCriteria() {
+		return getSession().createCriteria(getActuallType());
 	}
 }

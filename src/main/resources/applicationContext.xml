@@ -22,6 +22,7 @@
 			<list>
 				<value>com.himedia.usrserv.customer.model</value>
 				<value>com.himedia.usrserv.thirdparty.domain</value>
+				<value>com.himedia.usrserv.media.domain</value>
 			</list>
 		</property>  
 		<property name="hibernateProperties">
