@@ -25,7 +25,7 @@ import org.springframework.validation.ObjectError;
 public class ValidArgsAspect {
 	static final Logger logger = LoggerFactory.getLogger(ValidArgsAspect.class);
 	
-	@Pointcut("execution(public * com.example.controller.*.*(..))")
+	@Pointcut("execution(public * com.himedia.usrserv.*.controller.*.*(..))")
 	public void valid() {
 	}
 
@@ -71,9 +71,11 @@ public class ValidArgsAspect {
 			}
 
 			return pjp.proceed();
+		} catch (HiMediaException e) {
+			return CommonResp.failed(e);
 		} catch (Throwable e) {
 			e.printStackTrace();
-			return null;
+			return CommonResp.failed(e.getMessage());
 		}
 	}
 

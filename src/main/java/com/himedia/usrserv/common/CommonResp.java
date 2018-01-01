@@ -12,6 +12,14 @@ public class CommonResp {
 		return new CommonResp(1, errorDesc);
 	}
 	
+	public static CommonResp failed(int code, String errorDesc) {
+		return new CommonResp(1, errorDesc);
+	}
+	
+	public static CommonResp failed(HiMediaException exception) {
+		return new CommonResp(exception.errorCode, exception.errorDesc);
+	}
+	
 	public static CommonResp succeed() {
 		return new CommonResp();
 	}
